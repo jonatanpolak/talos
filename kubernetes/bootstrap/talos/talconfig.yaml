@@ -1,0 +1,117 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/budimanjojo/talhelper/master/pkg/config/schemas/talconfig.json
+---
+# renovate: datasource=docker depName=ghcr.io/siderolabs/installer
+talosVersion: v1.8.2
+# renovate: datasource=docker depName=ghcr.io/siderolabs/kubelet
+kubernetesVersion: v1.31.2
+
+clusterName: "homelab-talos"
+endpoint: https://192.168.120.17:6443
+clusterPodNets:
+  - "10.69.0.0/16"
+clusterSvcNets:
+  - "10.96.0.0/16"
+additionalApiServerCertSans: &sans
+  - "192.168.120.17"
+  - 127.0.0.1 # KubePrism
+  - "talos.home.arpa"
+  - "192.168.120.17"
+additionalMachineCertSans: *sans
+
+# Disable built-in Flannel to use Cilium
+cniConfig:
+  name: none
+
+nodes:
+  - hostname: "saturn"
+    ipAddress: "192.168.120.12"
+    installDisk: "/dev/sdb"
+    machineSpec:
+      secureboot: true
+    talosImageURL: factory.talos.dev/installer-secureboot/33e6ec48475ff673cbb36670957a83d37b918bdd969f039df9c279a38bb0391a
+    controlPlane: true
+    networkInterfaces:
+      - deviceSelector:
+          hardwareAddr: "00:23:24:ae:f7:28"
+        dhcp: false
+        addresses:
+          - "192.168.120.12/24"
+        routes:
+          - network: 0.0.0.0/0
+            gateway: "192.168.120.1"
+        mtu: 1500
+        vip:
+          ip: "192.168.120.17"
+  - hostname: "venus"
+    ipAddress: "192.168.120.13"
+    installDisk: "/dev/sdb"
+    machineSpec:
+      secureboot: true
+    talosImageURL: factory.talos.dev/installer-secureboot/33e6ec48475ff673cbb36670957a83d37b918bdd969f039df9c279a38bb0391a
+    controlPlane: true
+    networkInterfaces:
+      - deviceSelector:
+          hardwareAddr: "00:23:24:c0:1e:67"
+        dhcp: false
+        addresses:
+          - "192.168.120.13/24"
+        routes:
+          - network: 0.0.0.0/0
+            gateway: "192.168.120.1"
+        mtu: 1500
+        vip:
+          ip: "192.168.120.17"
+  - hostname: "mercury"
+    ipAddress: "192.168.120.14"
+    installDisk: "/dev/sdb"
+    machineSpec:
+      secureboot: true
+    talosImageURL: factory.talos.dev/installer-secureboot/33e6ec48475ff673cbb36670957a83d37b918bdd969f039df9c279a38bb0391a
+    controlPlane: true
+    networkInterfaces:
+      - deviceSelector:
+          hardwareAddr: "00:23:24:c7:61:e7"
+        dhcp: false
+        addresses:
+          - "192.168.120.14/24"
+        routes:
+          - network: 0.0.0.0/0
+            gateway: "192.168.120.1"
+        mtu: 1500
+        vip:
+          ip: "192.168.120.17"
+
+# Global patches
+patches:
+  - # Encrypt system disk with TPM
+    |-
+    machine:
+      systemDiskEncryption:
+        ephemeral:
+          provider: luks2
+          keys:
+            - slot: 0
+              tpm: {}
+        state:
+          provider: luks2
+          keys:
+            - slot: 0
+              tpm: {}
+  - "@./patches/global/cluster-discovery.yaml"
+  - "@./patches/global/containerd.yaml"
+  - "@./patches/global/disable-search-domain.yaml"
+  - "@./patches/global/dns.yaml"
+  - "@./patches/global/hostdns.yaml"
+  - "@./patches/global/kubelet.yaml"
+  - "@./patches/global/ntp.yaml"
+  - "@./patches/global/openebs-local.yaml"
+  - "@./patches/global/sysctl.yaml"
+
+# Controller patches
+controlPlane:
+  patches:
+    - "@./patches/controller/api-access.yaml"
+    - "@./patches/controller/cluster.yaml"
+    - "@./patches/controller/disable-admission-controller.yaml"
+    - "@./patches/controller/etcd.yaml"
+
