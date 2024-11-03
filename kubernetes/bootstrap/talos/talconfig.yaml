@@ -27,7 +27,7 @@ nodes:
     installDiskSelector:
       busPath: "/pci0000:00/0000:00:17.0/ata5/*"
     talosImageURL: factory.talos.dev/installer/922571c4ce7bd42c58e3b2e06a119fb3b1172711bd2f23a769d893a732d75773
-    controlPlane: true
+    controlPlane: false
     networkInterfaces:
       - deviceSelector:
           hardwareAddr: "00:23:24:ae:f7:28"
@@ -38,8 +38,6 @@ nodes:
           - network: 0.0.0.0/0
             gateway: "192.168.120.1"
         mtu: 1500
-        vip:
-          ip: "192.168.120.10"
   - hostname: "venus"
     ipAddress: "192.168.120.13"
     installDiskSelector:
@@ -81,7 +79,7 @@ nodes:
     installDiskSelector:
       busPath: "/pci0000:00/0000:00:17.0/ata5/*"
     talosImageURL: factory.talos.dev/installer/922571c4ce7bd42c58e3b2e06a119fb3b1172711bd2f23a769d893a732d75773
-    controlPlane: true
+    controlPlane: false
     networkInterfaces:
       - deviceSelector:
           hardwareAddr: "00:23:24:af:e2:a0"
@@ -92,8 +90,6 @@ nodes:
           - network: 0.0.0.0/0
             gateway: "192.168.120.1"
         mtu: 1500
-        vip:
-          ip: "192.168.120.10"
   - hostname: "mars"
     ipAddress: "192.168.120.16"
     installDiskSelector:
