@@ -15,7 +15,6 @@ additionalApiServerCertSans: &sans
   - "192.168.120.17"
   - 127.0.0.1 # KubePrism
   - "talos.home.arpa"
-  - "192.168.120.17"
 additionalMachineCertSans: *sans
 
 # Disable built-in Flannel to use Cilium
@@ -25,10 +24,9 @@ cniConfig:
 nodes:
   - hostname: "saturn"
     ipAddress: "192.168.120.12"
-    installDisk: "/dev/sdb"
-    machineSpec:
-      secureboot: true
-    talosImageURL: factory.talos.dev/installer-secureboot/33e6ec48475ff673cbb36670957a83d37b918bdd969f039df9c279a38bb0391a
+    installDiskSelector:
+      busPath: "/pci0000:00/0000:00:17.0/ata5/*"
+    talosImageURL: factory.talos.dev/installer/922571c4ce7bd42c58e3b2e06a119fb3b1172711bd2f23a769d893a732d75773
     controlPlane: true
     networkInterfaces:
       - deviceSelector:
@@ -44,10 +42,9 @@ nodes:
           ip: "192.168.120.17"
   - hostname: "venus"
     ipAddress: "192.168.120.13"
-    installDisk: "/dev/sdb"
-    machineSpec:
-      secureboot: true
-    talosImageURL: factory.talos.dev/installer-secureboot/33e6ec48475ff673cbb36670957a83d37b918bdd969f039df9c279a38bb0391a
+    installDiskSelector:
+      busPath: "/pci0000:00/0000:00:17.0/ata5/*"
+    talosImageURL: factory.talos.dev/installer/922571c4ce7bd42c58e3b2e06a119fb3b1172711bd2f23a769d893a732d75773
     controlPlane: true
     networkInterfaces:
       - deviceSelector:
@@ -63,10 +60,9 @@ nodes:
           ip: "192.168.120.17"
   - hostname: "mercury"
     ipAddress: "192.168.120.14"
-    installDisk: "/dev/sdb"
-    machineSpec:
-      secureboot: true
-    talosImageURL: factory.talos.dev/installer-secureboot/33e6ec48475ff673cbb36670957a83d37b918bdd969f039df9c279a38bb0391a
+    installDiskSelector:
+      busPath: "/pci0000:00/0000:00:17.0/ata5/*"
+    talosImageURL: factory.talos.dev/installer/922571c4ce7bd42c58e3b2e06a119fb3b1172711bd2f23a769d893a732d75773
     controlPlane: true
     networkInterfaces:
       - deviceSelector:
@@ -80,23 +76,45 @@ nodes:
         mtu: 1500
         vip:
           ip: "192.168.120.17"
+  - hostname: "uranus"
+    ipAddress: "192.168.120.15"
+    installDiskSelector:
+      busPath: "/pci0000:00/0000:00:17.0/ata5/*"
+    talosImageURL: factory.talos.dev/installer/922571c4ce7bd42c58e3b2e06a119fb3b1172711bd2f23a769d893a732d75773
+    controlPlane: true
+    networkInterfaces:
+      - deviceSelector:
+          hardwareAddr: "00:23:24:af:e2:a0"
+        dhcp: false
+        addresses:
+          - "192.168.120.15/24"
+        routes:
+          - network: 0.0.0.0/0
+            gateway: "192.168.120.1"
+        mtu: 1500
+        vip:
+          ip: "192.168.120.17"
+  - hostname: "mars"
+    ipAddress: "192.168.120.16"
+    installDiskSelector:
+      busPath: "/pci0000:00/0000:00:17.0/ata5/*"
+    talosImageURL: factory.talos.dev/installer/922571c4ce7bd42c58e3b2e06a119fb3b1172711bd2f23a769d893a732d75773
+    controlPlane: true
+    networkInterfaces:
+      - deviceSelector:
+          hardwareAddr: "00:23:24:d1:da:d8"
+        dhcp: false
+        addresses:
+          - "192.168.120.16/24"
+        routes:
+          - network: 0.0.0.0/0
+            gateway: "192.168.120.1"
+        mtu: 1500
+        vip:
+          ip: "192.168.120.17"
 
 # Global patches
 patches:
-  - # Encrypt system disk with TPM
-    |-
-    machine:
-      systemDiskEncryption:
-        ephemeral:
-          provider: luks2
-          keys:
-            - slot: 0
-              tpm: {}
-        state:
-          provider: luks2
-          keys:
-            - slot: 0
-              tpm: {}
   - "@./patches/global/cluster-discovery.yaml"
   - "@./patches/global/containerd.yaml"
   - "@./patches/global/disable-search-domain.yaml"
