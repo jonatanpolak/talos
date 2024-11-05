@@ -1,11 +1,9 @@
-#% if bootstrap_cloudflare.enabled %#
 ---
 apiVersion: source.toolkit.fluxcd.io/v1
 kind: HelmRepository
 metadata:
-  name: external-dns
+  name: csi-driver-nfs
   namespace: flux-system
 spec:
-  interval: 1h
-  url: https://kubernetes-sigs.github.io/external-dns
-#% endif %#
+  interval: 2h
+  url: https://raw.githubusercontent.com/kubernetes-csi/csi-driver-nfs/master/charts
