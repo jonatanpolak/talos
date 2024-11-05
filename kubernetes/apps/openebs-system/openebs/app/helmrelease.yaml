@@ -21,6 +21,8 @@ spec:
     remediation:
       retries: 3
   values:
+    args:
+      - --iova-mode=pa
     metrics:
       enabled: false
     engines:
